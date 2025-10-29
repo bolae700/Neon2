@@ -1,0 +1,699 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pola's Portfolio</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Dancing+Script:wght@500&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --dark-blue: #031d29;
+            --primary-blue: #0e6994;
+            --white: #ffffff;
+            --font-main: 'Poppins', sans-serif;
+            --font-script: 'Dancing Script', cursive;
+            --transition-bounce: cubic-bezier(0.68, -0.6, 0.32, 1.6);
+            --transition-swift: cubic-bezier(0.2, 0.8, 0.2, 1);
+            --window-width: 300px;
+            --window-height: 450px;
+            --nav-width: 450px;
+            --nav-height: 65px;
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            font-family: var(--font-main);
+            color: var(--white);
+            background: var(--dark-blue);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        
+        /* --- Custom Scrollbar --- */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(3, 29, 41, 0.5);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-blue);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--white);
+        }
+
+        /* --- Main Structure & Background --- */
+        .portfolio-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .animated-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            background: linear-gradient(45deg, var(--primary-blue), var(--dark-blue));
+            background-size: 200% 200%;
+            animation: animated-gradient 20s ease infinite;
+        }
+        
+        .shape {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.1);
+            animation: float 20s ease-in-out infinite alternate;
+            will-change: transform;
+            border-radius: 50%;
+            filter: blur(2px);
+        }
+
+        /* --- Content Window --- */
+        .content-frame {
+            position: relative;
+            width: var(--window-width);
+            height: var(--window-height);
+            z-index: 10;
+            margin-bottom: calc(var(--nav-height) + 40px);
+        }
+
+        .window {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2.5rem 1.5rem;
+            text-align: center;
+            
+            background: var(--dark-blue);
+            border: 3px solid var(--primary-blue);
+            border-radius: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            
+            visibility: hidden;
+            opacity: 0;
+            transform: translateX(-100vw) scale(0.8) rotate(-15deg);
+            transition: all 0.7s var(--transition-bounce);
+            will-change: transform, opacity;
+            overflow: hidden;
+        }
+        
+        .window.active {
+            visibility: visible;
+            opacity: 1;
+            transform: translateX(0) scale(1) rotate(0deg);
+        }
+
+        .window.exiting {
+            transform: translateX(100vw) scale(0.8) rotate(15deg);
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        /* --- Navigation Bar --- */
+        .nav-bar {
+            position: absolute;
+            bottom: 20px;
+            width: 90%;
+            max-width: var(--nav-width);
+            height: var(--nav-height);
+            background: var(--dark-blue);
+            border: 3px solid var(--primary-blue);
+            border-radius: 999px; /* Pill shape */
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            z-index: 20;
+            padding: 0 0.5rem;
+        }
+        
+        .nav-indicator {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            height: calc(100% - 10px);
+            border-radius: 999px;
+            background-color: var(--primary-blue);
+            transform: translateY(-50%);
+            transition: all 0.5s var(--transition-bounce);
+            z-index: -1;
+            will-change: transform, width;
+        }
+
+        .nav-button {
+            position: relative;
+            z-index: 1;
+            flex: 1;
+            height: 100%;
+            background: none;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-blue);
+            transition: color 0.3s ease, transform 0.3s var(--transition-bounce);
+            will-change: transform;
+        }
+
+        .nav-button:hover {
+            transform: scale(1.2);
+        }
+
+        .nav-button.active {
+            color: var(--white);
+        }
+        
+        .nav-button svg {
+            width: 30px;
+            height: 30px;
+        }
+
+        /* --- Home Window Styles --- */
+        #home { justify-content: center; gap: 1rem; }
+        #home .profile-pic {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid var(--primary-blue);
+            transition: rotate 0.5s var(--transition-bounce), scale 0.5s var(--transition-bounce), box-shadow 0.3s ease;
+            will-change: rotate, scale;
+        }
+        #home .profile-pic:hover { 
+            scale: 1.15;
+            rotate: 360deg;
+            box-shadow: 0 0 25px var(--primary-blue);
+        }
+
+        #home .name-container { position: relative; display: inline-block; }
+        #home .name { font-size: 2.2rem; font-weight: 700; letter-spacing: 0.05em; display: flex; align-items: center; }
+        #home .music-note { display: inline-block; margin-left: 0.5rem; animation: dance 2s ease-in-out infinite; }
+        #home .floating-note { position: absolute; opacity: 0; color: var(--primary-blue); }
+        #home .name-container:hover .floating-note.note1 { animation: float-note 1.5s ease-out infinite 0.2s; }
+        #home .name-container:hover .floating-note.note2 { animation: float-note 1.5s ease-out infinite 0.5s; }
+        #home .verse { font-family: var(--font-script); font-size: 1rem; color: rgba(255, 255, 255, 0.8); max-width: 250px; font-style: italic; }
+        #home .status { font-size: 0.9rem; display: flex; align-items: center; gap: 0.5rem; letter-spacing: 0.1em; font-weight: 600; }
+        #home .heart { color: #f43f5e; animation: beat 1.5s ease-in-out infinite; }
+        #home .social-links { display: flex; gap: 1.5rem; margin-top: 0.5rem; }
+        #home .social-links a { color: var(--primary-blue); transition: all 0.3s var(--transition-bounce); will-change: transform, color; }
+        #home .social-links a:hover { color: var(--white); transform: scale(1.3) rotate(-10deg); }
+        #home .social-links svg { width: 32px; height: 32px; }
+
+        /* --- Music Window Styles (DEFINITIVE FLEXBOX FIX) --- */
+        #music {
+            justify-content: flex-start;
+            gap: 0.75rem;
+        }
+        #music > * {
+            width: 100%;
+        }
+        /* Make all top-level controls non-shrinkable so they stay fixed. */
+        #music > *:not(.playlist) {
+            flex-shrink: 0;
+        }
+        #music h2 { font-size: 1.5rem; font-weight: 700; }
+        #music .now-playing { padding: 0.75rem; background: var(--primary-blue); border-radius: 1rem; text-align: center; }
+        #music .track-title { font-size: 1.1rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        #music .track-artist { font-size: 0.8rem; opacity: 0.8; }
+        #music .progress-bar-container { height: 8px; background: #052535; border-radius: 4px; cursor: pointer; }
+        #music .progress-bar { width: 0%; height: 100%; background: var(--white); border-radius: 4px; }
+        #music .controls { display: flex; align-items: center; justify-content: center; gap: 1.5rem; padding: 0.5rem 0; }
+        #music .control-button { background: none; border: none; color: var(--primary-blue); cursor: pointer; transition: transform 0.2s var(--transition-bounce), color 0.2s; will-change: transform; }
+        #music .control-button:hover { transform: scale(1.2); color: var(--white); }
+        #music .play-pause-btn { background: var(--primary-blue); border-radius: 50%; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; color: var(--white); transition: transform 0.2s var(--transition-bounce), box-shadow 0.2s; will-change: transform; }
+        #music .play-pause-btn:hover { transform: scale(1.15); box-shadow: 0 0 15px var(--primary-blue); }
+        #music .play-pause-btn svg { width: 32px; height: 32px; margin-left: 3px; }
+        #music .play-pause-btn #pause-icon svg { margin-left: 0; }
+        #music .prev-next-btn svg { width: 28px; height: 28px; }
+        /* The playlist is the only element that should grow and shrink to fill available space. */
+        #music .playlist {
+            flex-grow: 1;
+            flex-shrink: 1; /* Explicitly allow shrinking to override any generic rules */
+            overflow-y: auto;
+            padding-right: 0.5rem;
+            min-height: 0; /* The magic property that makes flexbox scrolling work */
+        }
+        #music .playlist-item { padding: 0.75rem; margin-bottom: 0.5rem; border-radius: 0.75rem; background: rgba(14, 105, 148, 0.2); cursor: pointer; transition: all 0.3s var(--transition-swift); text-align: left; will-change: transform, background-color; }
+        #music .playlist-item:hover { transform: translateX(5px); background: rgba(14, 105, 148, 0.4); }
+        #music .playlist-item.active { background: var(--primary-blue); font-weight: 600; }
+        #music .playlist-item .item-title { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        #music .playlist-item .item-artist { font-size: 0.75rem; opacity: 0.8; }
+
+        /* --- Gallery Window Styles (Robust Flexbox Layout) --- */
+        #gallery { justify-content: flex-start; gap: 1rem; }
+        #gallery h2 { flex-shrink: 0; font-weight: 700; font-size: 1.5rem; }
+        #gallery .gallery-grid {
+            width: 100%;
+            flex-grow: 1;
+            min-height: 0;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 1rem;
+            overflow: hidden;
+            padding: 4px;
+        }
+        #gallery .gallery-item { overflow: hidden; border-radius: 1rem; cursor: pointer; border: 3px solid var(--primary-blue); transition: transform 0.4s var(--transition-bounce); will-change: transform; }
+        #gallery .gallery-item:hover { transform: scale(1.05) rotate(3deg); }
+        #gallery .gallery-item img { width: 100%; height: 100%; object-fit: cover; }
+
+        /* --- Clock Window Styles --- */
+        #clock { letter-spacing: 0.1em; gap: 1.5rem; }
+        #clock .time-wrapper { position: relative; }
+        #clock .time { font-size: 3.5rem; font-weight: 700; }
+        #clock .time-char { display: inline-block; transition: transform 0.5s var(--transition-bounce); }
+        #clock .date { font-size: 1rem; opacity: 0.8; }
+
+        /* --- Animations --- */
+        @keyframes animated-gradient { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        @keyframes float { 0% { transform: translateY(0px) scale(1); } 50% { transform: translateY(-40px) scale(1.1); } 100% { transform: translateY(0px) scale(1); } }
+        @keyframes dance { 0%, 100% { transform: translateY(0) rotate(-8deg); } 50% { transform: translateY(-8px) rotate(8deg); } }
+        @keyframes beat { 0%, 100% { transform: scale(1); } 10% { transform: scale(0.9); } 30% { transform: scale(1.2); } 50% { transform: scale(1); } }
+        @keyframes float-note { 0% { transform: translateY(0) scale(1); opacity: 1; } 100% { transform: translateY(-40px) scale(0.5); opacity: 0; } }
+
+        /* DEFINITIVE FIX: New Bouncy Content Animation */
+        @keyframes bounce-in-up {
+            from {
+                opacity: 0;
+                transform: translateY(40px) scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        .window .content-item {
+            opacity: 0; /* Start hidden */
+            /* Apply animation when window is active */
+            animation: bounce-in-up 0.7s var(--transition-bounce) forwards;
+            will-change: transform, opacity;
+        }
+        .window.active .content-item:nth-child(1) { animation-delay: 0.20s; }
+        .window.active .content-item:nth-child(2) { animation-delay: 0.25s; }
+        .window.active .content-item:nth-child(3) { animation-delay: 0.30s; }
+        .window.active .content-item:nth-child(4) { animation-delay: 0.35s; }
+        .window.active .content-item:nth-child(5) { animation-delay: 0.40s; }
+
+        /* --- Responsiveness --- */
+        @media (max-height: 700px) {
+            .content-frame {
+                height: calc(100% - var(--nav-height) - 40px);
+                max-height: 450px;
+                margin-bottom: calc(var(--nav-height) + 30px);
+            }
+            .nav-bar { bottom: 10px; }
+        }
+        @media (max-width: 480px) {
+            :root {
+                --window-width: 90vw;
+                --nav-height: 60px;
+            }
+             #clock .time { font-size: 3rem; }
+             #home .name { font-size: 2rem; }
+             #home .verse { font-size: 0.9rem; }
+        }
+        @media (max-width: 360px) {
+            #home .profile-pic { width: 100px; height: 100px; }
+            #clock .time { font-size: 2.5rem; }
+            #music .play-pause-btn { width: 50px; height: 50px; }
+            #music .play-pause-btn svg { width: 28px; height: 28px; }
+        }
+    </style>
+</head>
+<body>
+
+    <main class="portfolio-container">
+        <div class="animated-background">
+            <div class="shape" style="width: 200px; height: 200px; top: 10%; left: 5%; animation-duration: 25s;"></div>
+            <div class="shape" style="width: 100px; height: 100px; top: 20%; left: 80%; animation-duration: 30s; animation-delay: 5s;"></div>
+            <div class="shape" style="width: 150px; height: 150px; top: 70%; left: 10%; animation-duration: 20s; animation-delay: 2s;"></div>
+            <div class="shape" style="width: 120px; height: 120px; top: 65%; left: 85%; animation-duration: 35s; animation-delay: 7s;"></div>
+            <div class="shape" style="width: 80px; height: 80px; top: 80%; left: 50%; animation-duration: 18s; animation-delay: 3s;"></div>
+        </div>
+
+        <div class="content-frame">
+            <div id="home" class="window active">
+                <img src="https://xatimg.com/image/rWDHtSw2pqG2.jpg" alt="Pola" class="profile-pic content-item">
+                <div class="name-container content-item">
+                    <h1 class="name">Pola <span class="music-note">♪</span></h1>
+                    <span class="floating-note note1" style="top: 0; left: 105%; font-size: 1.2rem;">♪</span>
+                    <span class="floating-note note2" style="top: 8px; left: 110%; font-size: 0.8rem;">♪</span>
+                </div>
+                <p class="verse content-item">"But those who hope in the LORD will renew their strength. They will soar on wings like eagles; they will run and not grow weary, they will walk and not be faint." (Isaiah 40:31)</p>
+                <div class="status content-item"><span class="heart">❤︎</span><span>GOD IS LOVE</span><span class="heart">❤︎</span></div>
+                <div class="social-links content-item">
+                    <a href="https://github.com/bolae700" target="_blank" rel="noopener noreferrer" aria-label="GitHub"><svg fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M12 2C6.477 2 2 6.477 2 12c0 4.418 2.865 8.168 6.839 9.492.5.092.682-.217.682-.482 0-.237-.009-.868-.014-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.031-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.203 2.398.1 2.651.64.7 1.03 1.595 1.03 2.688 0 3.848-2.338 4.695-4.566 4.942.359.308.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.001 10.001 0 0022 12c0-5.523-4.477-10-10-10z" clip-rule="evenodd"></path></svg></a>
+                    <a href="https://www.youtube.com/@SoundSurge3" target="_blank" rel="noopener noreferrer" aria-label="YouTube"><svg fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M19.812 5.418c.861.23 1.538.907 1.768 1.768C21.998 8.78 22 12 22 12s0 3.22-.418 4.814a2.506 2.506 0 0 1-1.768 1.768c-1.594.418-7.814.418-7.814.418s-6.22 0-7.814-.418a2.506 2.506 0 0 1-1.768-1.768C2.002 15.22 2 12 2 12s0-3.22.418-4.814a2.506 2.506 0 0 1 1.768-1.768C5.78 5.002 12 5.002 12 5.002s6.22 0 7.814.416zM9.75 15.5V8.5l6 3.5-6 3.5z" clip-rule="evenodd"></path></svg></a>
+                </div>
+            </div>
+            <div id="music" class="window">
+                <audio id="audio-player"></audio>
+                <h2 class="content-item">Music Player</h2>
+                <div class="now-playing content-item"><h3 class="track-title">Select a song</h3><p class="track-artist">-</p></div>
+                <div class="progress-bar-container content-item"><div class="progress-bar"></div></div>
+                <div class="controls content-item">
+                    <button class="control-button prev-next-btn" id="prev-btn" aria-label="Previous Track"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.75 5.653c0-1.426-1.529-2.33-2.779-1.643l-7.58 4.348a2.25 2.25 0 000 3.99l7.58 4.347c1.25.717 2.779-.217 2.779-1.643V5.653z"></path><path d="M8.25 5.25v13.5a.75.75 0 01-1.5 0V5.25a.75.75 0 011.5 0z"></path></svg></button>
+                    <button class="control-button play-pause-btn" id="play-pause-btn" aria-label="Play">
+                        <span id="play-icon"><svg viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" d="M4.5 5.653c0-1.426 1.529-2.33 2.779-1.643l11.54 6.647c1.295.742 1.295 2.545 0 3.286L7.279 20.99c-1.25.717-2.779-.217-2.779-1.643V5.653z" clip-rule="evenodd"></path></svg></span>
+                        <span id="pause-icon" style="display: none;"><svg viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" d="M6.75 5.25a.75.75 0 00-.75.75v12a.75.75 0 00.75.75h2.25a.75.75 0 00.75-.75v-12a.75.75 0 00-.75-.75H6.75zm8.25 0a.75.75 0 00-.75.75v12a.75.75 0 00.75.75h2.25a.75.75 0 00.75-.75v-12a.75.75 0 00-.75-.75h-2.25z" clip-rule="evenodd"></path></svg></span>
+                    </button>
+                    <button class="control-button prev-next-btn" id="next-btn" aria-label="Next Track"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M5.25 5.653c0-1.426 1.529-2.33 2.779-1.643l7.58 4.348a2.25 2.25 0 010 3.99l-7.58 4.347c-1.25.717-2.779-.217-2.779-1.643V5.653z"></path><path d="M15.75 5.25v13.5a.75.75 0 001.5 0V5.25a.75.75 0 00-1.5 0z"></path></svg></button>
+                </div>
+                <div class="playlist content-item"></div>
+            </div>
+            <div id="gallery" class="window"><h2 class="content-item">Gallery</h2><div class="gallery-grid content-item"></div></div>
+            <div id="clock" class="window"><div class="time-wrapper content-item"><div class="time">12:00 AM</div></div><div class="date content-item">Wednesday, July 17, 2024</div></div>
+        </div>
+
+        <nav class="nav-bar">
+            <div class="nav-indicator"></div>
+            <button class="nav-button active" data-tab="home" aria-label="Home" aria-current="page">
+                <svg fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955a1.5 1.5 0 012.122 0l8.954 8.955M2.25 12V21a.75.75 0 00.75.75h5.25v-6h4.5v6h5.25a.75.75 0 00.75-.75V12M12 2.25l.008.008L12 2.25z"></path></svg>
+            </button>
+            <button class="nav-button" data-tab="music" aria-label="Music">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3v10.55A4.001 4.001 0 1014 17V7h4V3h-6z"></path></svg>
+            </button>
+            <button class="nav-button" data-tab="gallery" aria-label="Gallery">
+                <svg fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"></path></svg>
+            </button>
+            <button class="nav-button" data-tab="clock" aria-label="Clock">
+                <svg fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            </button>
+        </nav>
+    </main>
+
+    <script>
+        const PortfolioApp = {
+            state: {
+                activeTab: 'home',
+                currentTrackIndex: 0,
+                isPlaying: false,
+                audioContext: null,
+                clockInterval: null,
+                lastTime: '',
+            },
+
+            elements: {},
+
+            constants: {
+                tracks: [
+                    { url: "https://audio.jukehost.co.uk/QyPglgdEHAkfqpR1NH5rMHiewfPCSg4o", title: "Ahlef be allah", artist: "Haitham Shaker" },
+                    { url: "https://audio.jukehost.co.uk/GkbwKXyHWfNGWHtJWsdemKmpOFJFkdCK", title: "Alors on dance", artist: "Stromae" },
+                    { url: "https://audio.jukehost.co.uk/MHf54iEPyQIkSmY55VYlqHGSH7CVQqdA", title: "Casablanca", artist: "Emre Kabak" },
+                    { url: "https://audio.jukehost.co.uk/GOzONzgMkJgOFZgbzmCAPU3uXpKKcYAh", title: "Unstoppable", artist: "Sia" },
+                    { url: "https://audio.jukehost.co.uk/c77yqDnvZV6lAmIPQPanmSgqVpnlnDyv", title: "Saber W Radi", artist: "George Wassouf" },
+                    { url: "https://audio.jukehost.co.uk/6tOF41jBlb83ocuYrxtuW7sAmEgyRyFZ", title: "Shoukran", artist: "George Wassouf" },
+                    { url: "https://audio.jukehost.co.uk/bbabQwnKnYhXlaRD8alUDCzGEhyu9Rwm", title: "Khadny 7aneen", artist: "George Wassouf" },
+                    { url: "https://audio.jukehost.co.uk/lrUXO0jmrJRZANKo0Gx9XEQ0PFuQxKN5", title: "Yalli Bitghib Aleiya", artist: "Haitham Shaker" },
+                    { url: "https://audio.jukehost.co.uk/6IQhCPy39Jv5Uxj9WI4fFMeUuJMWWR2D", title: "Khalik Ganbi", artist: "Haitham Shaker" },
+                ],
+                images: [
+                    "https://i.ibb.co/pXfwCcv/2d79b46de2deb3744fd330d815b76751.jpg",
+                    "https://i.ibb.co/Jyq80hX/bfa64e7da2612eb344663aa3fbcf2f59.png",
+                    "https://i.ibb.co/dDVSRPD/ss.png",
+                    "https://xatimg.com/image/rWDHtSw2pqG2.jpg"
+                ]
+            },
+
+            init() {
+                this.cacheDOMElements();
+                this.bindEvents();
+                this.renderGallery();
+                this.renderPlaylist();
+                this.loadTrack(this.state.currentTrackIndex);
+                this.startClock();
+                this.updateNavIndicator();
+                window.addEventListener('resize', () => this.updateNavIndicator());
+            },
+
+            cacheDOMElements() {
+                this.elements.navButtons = document.querySelectorAll('.nav-button');
+                this.elements.navIndicator = document.querySelector('.nav-indicator');
+                this.elements.windows = document.querySelectorAll('.window');
+                this.elements.timeEl = document.querySelector('#clock .time');
+                this.elements.dateEl = document.querySelector('#clock .date');
+                this.elements.galleryGrid = document.querySelector('.gallery-grid');
+                this.elements.audioPlayer = document.getElementById('audio-player');
+                this.elements.playPauseBtn = document.getElementById('play-pause-btn');
+                this.elements.playIcon = document.getElementById('play-icon');
+                this.elements.pauseIcon = document.getElementById('pause-icon');
+                this.elements.nextBtn = document.getElementById('next-btn');
+                this.elements.prevBtn = document.getElementById('prev-btn');
+                this.elements.progressBar = document.querySelector('.progress-bar');
+                this.elements.progressBarContainer = document.querySelector('.progress-bar-container');
+                this.elements.trackTitleEl = document.querySelector('.track-title');
+                this.elements.trackArtistEl = document.querySelector('.track-artist');
+                this.elements.playlistEl = document.querySelector('.playlist');
+            },
+
+            bindEvents() {
+                this.elements.navButtons.forEach(button => {
+                    button.addEventListener('mouseenter', () => this.playSound('hover'));
+                    button.addEventListener('click', () => this.switchTab(button.dataset.tab));
+                });
+
+                this.elements.playPauseBtn.addEventListener('click', () => this.togglePlayPause());
+                this.elements.nextBtn.addEventListener('click', () => this.playNextTrack());
+                this.elements.prevBtn.addEventListener('click', () => this.playPrevTrack());
+                
+                this.elements.audioPlayer.addEventListener('timeupdate', () => this.updateProgress());
+                this.elements.audioPlayer.addEventListener('ended', () => this.playNextTrack());
+                
+                this.elements.progressBarContainer.addEventListener('click', (e) => this.seek(e));
+            },
+            
+            // --- Sound Engine ---
+            initAudioContext() {
+                if (!this.state.audioContext && (window.AudioContext || window.webkitAudioContext)) {
+                    this.state.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                }
+            },
+
+            playSound(type) {
+                this.initAudioContext();
+                if (!this.state.audioContext) return;
+                if (this.state.audioContext.state === 'suspended') this.state.audioContext.resume();
+
+                const osc = this.state.audioContext.createOscillator();
+                const gain = this.state.audioContext.createGain();
+                osc.connect(gain);
+                gain.connect(this.state.audioContext.destination);
+
+                const now = this.state.audioContext.currentTime;
+                gain.gain.setValueAtTime(0, now);
+
+                switch(type) {
+                    case 'click':
+                        osc.type = 'sine'; osc.frequency.setValueAtTime(523.25, now); // C5
+                        gain.gain.linearRampToValueAtTime(0.3, now + 0.01).exponentialRampToValueAtTime(0.0001, now + 0.1);
+                        break;
+                    case 'hover':
+                        osc.type = 'triangle'; osc.frequency.setValueAtTime(783.99, now); // G5
+                        gain.gain.linearRampToValueAtTime(0.1, now + 0.01).exponentialRampToValueAtTime(0.0001, now + 0.1);
+                        break;
+                    case 'transition':
+                         osc.type = 'sine';
+                         osc.frequency.setValueAtTime(200, now);
+                         osc.frequency.exponentialRampToValueAtTime(800, now + 0.3);
+                         gain.gain.linearRampToValueAtTime(0.2, now + 0.01).exponentialRampToValueAtTime(0.0001, now + 0.3);
+                        break;
+                }
+                osc.start(now);
+                osc.stop(now + 0.3);
+            },
+            
+            // --- Navigation ---
+            switchTab(tab) {
+                if (tab === this.state.activeTab) return;
+
+                this.playSound('click');
+                this.playSound('transition');
+                
+                const currentWindow = document.getElementById(this.state.activeTab);
+                const newWindow = document.getElementById(tab);
+                const currentButton = document.querySelector(`.nav-button[data-tab="${this.state.activeTab}"]`);
+                const newButton = document.querySelector(`.nav-button[data-tab="${tab}"]`);
+                
+                if (currentWindow) currentWindow.classList.add('exiting');
+                
+                if (currentButton) currentButton.classList.remove('active');
+                
+                setTimeout(() => {
+                    if (currentWindow) currentWindow.classList.remove('active', 'exiting');
+                    newWindow.classList.add('active');
+                }, 150);
+
+
+                if (newButton) newButton.classList.add('active');
+                
+                this.state.activeTab = tab;
+                this.updateNavIndicator();
+            },
+
+            updateNavIndicator() {
+                const activeButton = document.querySelector('.nav-button.active');
+                if (activeButton) {
+                    this.elements.navIndicator.style.width = `${activeButton.offsetWidth - 10}px`;
+                    this.elements.navIndicator.style.transform = `translate(${activeButton.offsetLeft + 5}px, -50%)`;
+                }
+            },
+
+            // --- Clock ---
+            startClock() {
+                this.updateClock();
+                this.state.clockInterval = setInterval(() => this.updateClock(), 1000);
+            },
+            updateClock() {
+                const now = new Date();
+                const newTime = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+                if (newTime !== this.state.lastTime) {
+                    this.state.lastTime = newTime;
+                    this.elements.timeEl.innerHTML = newTime
+                        .split('')
+                        .map(char => `<span class="time-char">${char}</span>`)
+                        .join('');
+
+                    // Trigger animation
+                    const chars = this.elements.timeEl.querySelectorAll('.time-char');
+                    chars.forEach((char, i) => {
+                        setTimeout(() => {
+                            char.style.transform = `translateY(-10px)`;
+                            setTimeout(() => {
+                                char.style.transform = `translateY(0)`;
+                            }, 150);
+                        }, i * 30);
+                    });
+                }
+                this.elements.dateEl.textContent = now.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+            },
+
+            // --- Gallery ---
+            renderGallery() {
+                this.constants.images.forEach((src, index) => {
+                    const item = document.createElement('div');
+                    item.className = 'gallery-item';
+                    item.innerHTML = `<img src="${src}" alt="Gallery image ${index + 1}" loading="lazy">`;
+                    this.elements.galleryGrid.appendChild(item);
+                });
+            },
+
+            // --- Music Player ---
+            loadTrack(index) {
+                const track = this.constants.tracks[index];
+                this.elements.audioPlayer.src = track.url;
+                this.elements.trackTitleEl.textContent = track.title;
+                this.elements.trackArtistEl.textContent = track.artist;
+                document.querySelectorAll('.playlist-item').forEach((item, i) => {
+                    item.classList.toggle('active', i === index);
+                    if (i === index) {
+                        item.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    }
+                });
+            },
+
+            togglePlayPause() {
+                this.playSound('click');
+                this.state.isPlaying ? this.pauseTrack() : this.playTrack();
+            },
+
+            playTrack() {
+                this.state.isPlaying = true;
+                this.elements.audioPlayer.play().catch(e => console.error("Audio playback failed:", e));
+                this.elements.playIcon.style.display = 'none';
+                this.elements.pauseIcon.style.display = 'block';
+                this.elements.playPauseBtn.setAttribute('aria-label', 'Pause');
+            },
+
+            pauseTrack() {
+                this.state.isPlaying = false;
+                this.elements.audioPlayer.pause();
+                this.elements.playIcon.style.display = 'block';
+                this.elements.pauseIcon.style.display = 'none';
+                this.elements.playPauseBtn.setAttribute('aria-label', 'Play');
+            },
+            
+            playNextTrack() {
+                this.playSound('click');
+                this.state.currentTrackIndex = (this.state.currentTrackIndex + 1) % this.constants.tracks.length;
+                this.loadTrack(this.state.currentTrackIndex);
+                if (this.state.isPlaying) this.playTrack();
+            },
+
+            playPrevTrack() {
+                this.playSound('click');
+                this.state.currentTrackIndex = (this.state.currentTrackIndex - 1 + this.constants.tracks.length) % this.constants.tracks.length;
+                this.loadTrack(this.state.currentTrackIndex);
+                if (this.state.isPlaying) this.playTrack();
+            },
+
+            updateProgress() {
+                const { duration, currentTime } = this.elements.audioPlayer;
+                const progressPercent = (currentTime / duration) * 100;
+                this.elements.progressBar.style.width = `${progressPercent || 0}%`;
+            },
+            
+            seek(e) {
+                const width = this.elements.progressBarContainer.clientWidth;
+                const clickX = e.offsetX;
+                const duration = this.elements.audioPlayer.duration;
+                if(duration) {
+                  this.elements.audioPlayer.currentTime = (clickX / width) * duration;
+                }
+            },
+            
+            renderPlaylist() {
+                this.constants.tracks.forEach((track, index) => {
+                    const item = document.createElement('div');
+                    item.className = 'playlist-item';
+                    item.innerHTML = `<p class="item-title">${track.title}</p><p class="item-artist">${track.artist}</p>`;
+                    item.addEventListener('click', () => {
+                        this.playSound('click');
+                        this.state.currentTrackIndex = index;
+                        this.loadTrack(index);
+                        this.playTrack();
+                    });
+                    this.elements.playlistEl.appendChild(item);
+                });
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', () => PortfolioApp.init());
+    </script>
+</body>
+</html>
